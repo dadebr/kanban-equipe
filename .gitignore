@@ -1,0 +1,41 @@
+# Arquivos Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Arquivos de dados fonte
+*.xlsm
+*.xlsx
+*.xls
+tarefas_kanban.json
+
+# Arquivos de template (não necessários no GitHub)
+# Os templates ficam apenas localmente
+# O index.html gerado já contém tudo embutido
+
+# Ambiente virtual Python
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Arquivos temporários
+*.tmp
+*.bak
+*.log
+
+# Manter apenas o index.html gerado e documentação
+# Tudo mais é desenvolvimento local
