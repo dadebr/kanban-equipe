@@ -11,6 +11,7 @@ env/
 tarefas_kanban.json
 *.py
 *.bat
+*.vbs
 *.css
 *.js
 styles.css
