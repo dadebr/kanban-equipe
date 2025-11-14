@@ -1,41 +1,33 @@
-# Arquivos Python
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-.Python
+venv/
+env/
 
-# Arquivos de dados fonte
+# Desenvolvimento local
 *.xlsm
 *.xlsx
 *.xls
 tarefas_kanban.json
+*.py
+*.bat
+*.css
+*.js
+styles.css
+script.js
 
-# Arquivos de template (não necessários no GitHub)
-# Os templates ficam apenas localmente
-# O index.html gerado já contém tudo embutido
+# Documentação local (não publicar)
+README_GITHUB.md
+INSTRUÇÕES_GITHUB.md
+claude.md
 
-# Ambiente virtual Python
-venv/
-env/
-ENV/
-
-# IDE
+# IDE e temporários
 .vscode/
 .idea/
 *.swp
-*.swo
-*~
-
-# Sistema operacional
+*.log
+*.tmp
 .DS_Store
 Thumbs.db
-desktop.ini
 
-# Arquivos temporários
-*.tmp
-*.bak
-*.log
-
-# Manter apenas o index.html gerado e documentação
-# Tudo mais é desenvolvimento local
+# Manter apenas: index.html e README.md
