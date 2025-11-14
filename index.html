@@ -509,11 +509,131 @@ body {
     animation: fadeIn 0.4s ease-out;
 }
 
+/* ===== CONTROLES DE NAVEGAÇÃO ===== */
+.kanban-nav-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-lg);
+    border: var(--border-default);
+    box-shadow: var(--shadow-md);
+}
+
+.kanban-nav-btn {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: var(--text-light);
+    border: none;
+    border-radius: var(--radius-md);
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+}
+
+.kanban-nav-btn:hover:not(:disabled) {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-glow);
+}
+
+.kanban-nav-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.kanban-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.kanban-progress-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.kanban-progress-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.kanban-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    border-radius: 10px;
+    transition: width var(--transition-base);
+    box-shadow: 0 0 10px rgba(74, 159, 245, 0.5);
+    width: 0%;
+}
+
+.kanban-progress-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 42px;
+    text-align: right;
+}
+
+/* ===== BOARD WRAPPER E FADE GRADIENTS ===== */
+.kanban-board-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+}
+
 .kanban-board {
     display: flex;
     gap: var(--spacing-md);
     overflow-x: auto;
     padding-bottom: var(--spacing-md);
+    scroll-behavior: smooth;
+}
+
+.kanban-board-fade {
+    position: absolute;
+    top: 0;
+    bottom: var(--spacing-md);
+    width: 60px;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.kanban-board-fade-left {
+    left: 0;
+    background: linear-gradient(90deg,
+        rgba(10, 14, 39, 0.95) 0%,
+        rgba(10, 14, 39, 0.7) 40%,
+        transparent 100%
+    );
+}
+
+.kanban-board-fade-right {
+    right: 0;
+    background: linear-gradient(270deg,
+        rgba(10, 14, 39, 0.95) 0%,
+        rgba(10, 14, 39, 0.7) 40%,
+        transparent 100%
+    );
+}
+
+.kanban-board-fade.active {
+    opacity: 1;
 }
 
 /* Scrollbar customizada do board */
@@ -1029,9 +1149,9 @@ body {
 
     <!-- Dados embutidos -->
     <script>
-        // Dados extraídos do Excel em 2025-11-14 14:15:43
+        // Dados extraídos do Excel em 2025-11-14 15:19:23
         window.DADOS_KANBAN = {
-  "data_extracao": "2025-11-14 14:15:43",
+  "data_extracao": "2025-11-14 15:19:23",
   "arquivo_origem": "../Acompanhamento de Tarefas CGUPE (14).xlsm",
   "colunas": [
     {
@@ -7351,6 +7471,14 @@ body {
     
 
     <!-- Conteúdo da página -->
+
+    
+
+    <!-- Conteúdo da página -->
+
+    
+
+    <!-- Conteúdo da página -->
 <!-- ========================================== -->
     <!-- CGUPE KANBAN - VERSÃO STANDALONE          -->
     <!-- Este arquivo contém tudo embutido:        -->
@@ -7509,17 +7637,65 @@ body {
     <main class="kanban-container">
         <!-- View: Fluxo de Trabalho -->
         <div id="viewWorkflow" class="kanban-view active">
-            <div class="kanban-board" id="boardWorkflow"></div>
+            <!-- Controles de navegação -->
+            <div class="kanban-nav-controls">
+                <button class="kanban-nav-btn kanban-nav-prev" data-board="boardWorkflow" title="Navegar para esquerda (← ou ←)">◀</button>
+                <div class="kanban-progress-container">
+                    <div class="kanban-progress-bar">
+                        <div class="kanban-progress-fill" data-board="boardWorkflow"></div>
+                    </div>
+                    <span class="kanban-progress-text" data-board="boardWorkflow">0%</span>
+                </div>
+                <button class="kanban-nav-btn kanban-nav-next" data-board="boardWorkflow" title="Navegar para direita (→ ou →)">▶</button>
+            </div>
+            <!-- Board com wrapper e fade gradients -->
+            <div class="kanban-board-wrapper">
+                <div class="kanban-board-fade kanban-board-fade-left"></div>
+                <div class="kanban-board" id="boardWorkflow"></div>
+                <div class="kanban-board-fade kanban-board-fade-right"></div>
+            </div>
         </div>
 
         <!-- View: Por Equipe -->
         <div id="viewEquipes" class="kanban-view">
-            <div class="kanban-board" id="boardEquipes"></div>
+            <!-- Controles de navegação -->
+            <div class="kanban-nav-controls">
+                <button class="kanban-nav-btn kanban-nav-prev" data-board="boardEquipes" title="Navegar para esquerda (← ou ←)">◀</button>
+                <div class="kanban-progress-container">
+                    <div class="kanban-progress-bar">
+                        <div class="kanban-progress-fill" data-board="boardEquipes"></div>
+                    </div>
+                    <span class="kanban-progress-text" data-board="boardEquipes">0%</span>
+                </div>
+                <button class="kanban-nav-btn kanban-nav-next" data-board="boardEquipes" title="Navegar para direita (→ ou →)">▶</button>
+            </div>
+            <!-- Board com wrapper e fade gradients -->
+            <div class="kanban-board-wrapper">
+                <div class="kanban-board-fade kanban-board-fade-left"></div>
+                <div class="kanban-board" id="boardEquipes"></div>
+                <div class="kanban-board-fade kanban-board-fade-right"></div>
+            </div>
         </div>
 
         <!-- View: Por Tipo -->
         <div id="viewTipos" class="kanban-view">
-            <div class="kanban-board" id="boardTipos"></div>
+            <!-- Controles de navegação -->
+            <div class="kanban-nav-controls">
+                <button class="kanban-nav-btn kanban-nav-prev" data-board="boardTipos" title="Navegar para esquerda (← ou ←)">◀</button>
+                <div class="kanban-progress-container">
+                    <div class="kanban-progress-bar">
+                        <div class="kanban-progress-fill" data-board="boardTipos"></div>
+                    </div>
+                    <span class="kanban-progress-text" data-board="boardTipos">0%</span>
+                </div>
+                <button class="kanban-nav-btn kanban-nav-next" data-board="boardTipos" title="Navegar para direita (→ ou →)">▶</button>
+            </div>
+            <!-- Board com wrapper e fade gradients -->
+            <div class="kanban-board-wrapper">
+                <div class="kanban-board-fade kanban-board-fade-left"></div>
+                <div class="kanban-board" id="boardTipos"></div>
+                <div class="kanban-board-fade kanban-board-fade-right"></div>
+            </div>
         </div>
     </main>
 
@@ -11073,7 +11249,7 @@ window.aplicarSelecaoColunas = aplicarSelecaoColunas;
     </script>
 
     <!-- Biblioteca Chart.js (para gráficos) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
 
     <!-- JavaScript da aplicação (modificado para standalone) -->
     <script>
@@ -11935,6 +12111,2060 @@ window.fecharModalColunas = fecharModalColunas;
 window.selecionarTodasColunas = selecionarTodasColunas;
 window.deselecionarTodasColunas = deselecionarTodasColunas;
 window.aplicarSelecaoColunas = aplicarSelecaoColunas;
+
+    </script>
+
+    <!-- Biblioteca Chart.js (para gráficos) -->
+    
+
+    <!-- JavaScript da aplicação (modificado para standalone) -->
+    <script>
+// ===== VARIÁVEIS GLOBAIS =====
+let dadosCompletos = null;
+let viewAtual = 'workflow';
+let charts = {};
+let colunasVisiveis = new Set(); // Armazena IDs das colunas visíveis
+
+// ===== INICIALIZAÇÃO =====
+document.addEventListener('DOMContentLoaded', () => {
+    carregarPreferencias(); // Carregar preferências salvas
+    carregarDados();
+    configurarEventListeners();
+});
+
+// ===== GERENCIAMENTO DE PREFERÊNCIAS =====
+function salvarPreferencias() {
+    const preferencias = {
+        viewAtual: viewAtual,
+        colunasVisiveis: Array.from(colunasVisiveis),
+        filtroEquipe: document.getElementById('filtroEquipe')?.value || '',
+        filtroStatus: document.getElementById('filtroStatus')?.value || '',
+        filtroAtrasadas: document.getElementById('filtroAtrasadas')?.checked || false
+    };
+
+    try {
+        localStorage.setItem('cgupe_kanban_preferencias', JSON.stringify(preferencias));
+        console.log('✓ Preferências salvas');
+    } catch (error) {
+        console.warn('Não foi possível salvar preferências:', error);
+    }
+}
+
+function carregarPreferencias() {
+    try {
+        const preferenciasStr = localStorage.getItem('cgupe_kanban_preferencias');
+        if (!preferenciasStr) return;
+
+        const preferencias = JSON.parse(preferenciasStr);
+
+        // Restaurar visualização
+        if (preferencias.viewAtual) {
+            viewAtual = preferencias.viewAtual;
+        }
+
+        // Restaurar colunas visíveis
+        if (preferencias.colunasVisiveis && Array.isArray(preferencias.colunasVisiveis)) {
+            colunasVisiveis = new Set(preferencias.colunasVisiveis);
+        }
+
+        // Restaurar filtros (será aplicado após DOM carregar)
+        if (preferencias.filtroEquipe !== undefined) {
+            setTimeout(() => {
+                const elemEquipe = document.getElementById('filtroEquipe');
+                if (elemEquipe) elemEquipe.value = preferencias.filtroEquipe;
+            }, 100);
+        }
+
+        if (preferencias.filtroStatus !== undefined) {
+            setTimeout(() => {
+                const elemStatus = document.getElementById('filtroStatus');
+                if (elemStatus) elemStatus.value = preferencias.filtroStatus;
+            }, 100);
+        }
+
+        if (preferencias.filtroAtrasadas !== undefined) {
+            setTimeout(() => {
+                const elemAtrasadas = document.getElementById('filtroAtrasadas');
+                if (elemAtrasadas) elemAtrasadas.checked = preferencias.filtroAtrasadas;
+            }, 100);
+        }
+
+        console.log('✓ Preferências carregadas');
+    } catch (error) {
+        console.warn('Não foi possível carregar preferências:', error);
+    }
+}
+
+function limparPreferencias() {
+    try {
+        localStorage.removeItem('cgupe_kanban_preferencias');
+        console.log('✓ Preferências removidas');
+    } catch (error) {
+        console.warn('Não foi possível limpar preferências:', error);
+    }
+}
+
+// ===== CARREGAR DADOS =====
+async function carregarDados() {
+    try {
+        // Dados embutidos no HTML - não precisa fazer fetch
+        if (!window.DADOS_KANBAN) {
+            throw new Error('Dados não encontrados. Arquivo standalone corrompido.');
+        }
+
+        dadosCompletos = window.DADOS_KANBAN;
+
+        // Atualizar interface
+        atualizarDataExtracao();
+        atualizarMetricas();
+        popularFiltros();
+        renderizarGraficos();
+
+        // Restaurar visualização ativa
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.view === viewAtual);
+        });
+        document.querySelectorAll('.kanban-view').forEach(viewEl => {
+            viewEl.classList.remove('active');
+        });
+        document.getElementById(`view${capitalize(viewAtual)}`).classList.add('active');
+
+        renderizarKanban();
+
+        console.log('✓ Dados carregados:', dadosCompletos.colunas.length, 'colunas');
+    } catch (error) {
+        console.error('❌ Erro ao carregar dados:', error);
+        mostrarErro('Erro ao carregar dados. Verifique se o arquivo tarefas_kanban.json existe.');
+    }
+}
+
+// ===== CONFIGURAR EVENT LISTENERS =====
+function configurarEventListeners() {
+    // Seletor de visualização
+    document.querySelectorAll('.view-btn[data-view]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const view = btn.dataset.view;
+            trocarVisualizacao(view);
+        });
+    });
+
+    // Botão do seletor de colunas
+    document.getElementById('btnSeletorColunas').addEventListener('click', abrirModalColunas);
+
+    // Filtros
+    document.getElementById('searchInput').addEventListener('input', renderizarKanban);
+    document.getElementById('filtroEquipe').addEventListener('change', () => {
+        renderizarKanban();
+        salvarPreferencias();
+    });
+    document.getElementById('filtroStatus').addEventListener('change', () => {
+        renderizarKanban();
+        salvarPreferencias();
+    });
+    document.getElementById('filtroAtrasadas').addEventListener('change', () => {
+        renderizarKanban();
+        salvarPreferencias();
+    });
+    document.getElementById('btnLimparFiltros').addEventListener('click', limparFiltros);
+}
+
+// ===== ATUALIZAR DATA DE EXTRAÇÃO =====
+function atualizarDataExtracao() {
+    const dataElement = document.getElementById('dataAtualizacao');
+    if (dadosCompletos && dadosCompletos.data_extracao) {
+        const data = new Date(dadosCompletos.data_extracao);
+        dataElement.textContent = data.toLocaleString('pt-BR');
+    }
+}
+
+// ===== ATUALIZAR MÉTRICAS (TAREFAS ÚNICAS) =====
+function atualizarMetricas() {
+    if (!dadosCompletos) return;
+
+    // Coletar todas as tarefas de todas as colunas
+    const todasTarefas = [];
+    dadosCompletos.colunas.forEach(coluna => {
+        coluna.tarefas.forEach(tarefa => {
+            todasTarefas.push(tarefa);
+        });
+    });
+
+    // Extrair IDs únicos para estatísticas do dashboard
+    const idsUnicos = new Set();
+    const tarefasUnicas = [];
+    const tarefasMap = new Map();
+
+    todasTarefas.forEach(tarefa => {
+        if (!idsUnicos.has(tarefa.id)) {
+            idsUnicos.add(tarefa.id);
+            tarefasUnicas.push(tarefa);
+            tarefasMap.set(tarefa.id, tarefa);
+        }
+    });
+
+    // Calcular estatísticas de tarefas ÚNICAS
+    let concluidas = 0;
+    let emAndamento = 0;
+    let atrasadas = 0;
+
+    tarefasUnicas.forEach(tarefa => {
+        const status = tarefa.status.toLowerCase();
+
+        if (status.includes('conclu')) {
+            concluidas++;
+        } else if (status.includes('execu')) {
+            emAndamento++;
+        }
+
+        if (tarefa.alertas && tarefa.alertas.length > 0) {
+            if (tarefa.alertas.some(a => a.includes('Atrasado') || a.includes('> 180'))) {
+                atrasadas++;
+            }
+        }
+    });
+
+    // Atualizar dashboard com tarefas ÚNICAS
+    document.getElementById('totalTarefas').textContent = tarefasUnicas.length;
+    document.getElementById('tarefasConcluidas').textContent = concluidas;
+    document.getElementById('tarefasEmAndamento').textContent = emAndamento;
+    document.getElementById('tarefasAtrasadas').textContent = atrasadas;
+}
+
+// ===== POPULAR FILTROS =====
+function popularFiltros() {
+    if (!dadosCompletos) return;
+
+    const selectStatus = document.getElementById('filtroStatus');
+    const statusSet = new Set();
+
+    // Coletar todos os status únicos
+    dadosCompletos.colunas.forEach(coluna => {
+        if (coluna.tipo === 'status') {
+            statusSet.add(coluna.nome);
+        }
+    });
+
+    // Ordenar alfabeticamente
+    const statusOrdenados = Array.from(statusSet).sort();
+
+    statusOrdenados.forEach(status => {
+        const option = document.createElement('option');
+        option.value = status;
+        option.textContent = status;
+        selectStatus.appendChild(option);
+    });
+}
+
+// ===== TROCAR VISUALIZAÇÃO =====
+function trocarVisualizacao(view) {
+    viewAtual = view;
+
+    // Atualizar botões
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === view);
+    });
+
+    // Atualizar views
+    document.querySelectorAll('.kanban-view').forEach(viewEl => {
+        viewEl.classList.remove('active');
+    });
+    document.getElementById(`view${capitalize(view)}`).classList.add('active');
+
+    // Renderizar o Kanban da view selecionada
+    renderizarKanban();
+
+    // Salvar preferência
+    salvarPreferencias();
+}
+
+// ===== RENDERIZAR KANBAN =====
+function renderizarKanban() {
+    if (!dadosCompletos) return;
+
+    const boardId = `board${capitalize(viewAtual)}`;
+    const board = document.getElementById(boardId);
+    board.innerHTML = '';
+
+    // Obter filtros
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const filtroEquipeVal = document.getElementById('filtroEquipe').value;
+    const filtroStatusVal = document.getElementById('filtroStatus').value;
+    const filtroAtrasadas = document.getElementById('filtroAtrasadas').checked;
+
+    // Filtrar colunas baseado na visualização
+    let colunasExibir = dadosCompletos.colunas;
+
+    switch (viewAtual) {
+        case 'workflow':
+            colunasExibir = colunasExibir.filter(c => c.tipo === 'status');
+            break;
+        case 'equipes':
+            colunasExibir = colunasExibir.filter(c => c.tipo === 'equipe');
+            break;
+        case 'tipos':
+            colunasExibir = colunasExibir.filter(c => c.tipo === 'tipo');
+            break;
+    }
+
+    // Filtrar por colunas selecionadas (se houver seleção)
+    if (colunasVisiveis.size > 0) {
+        colunasExibir = colunasExibir.filter(c => colunasVisiveis.has(c.nome));
+    }
+
+    // Renderizar cada coluna
+    colunasExibir.forEach(coluna => {
+        // Aplicar filtros nas tarefas
+        let tarefasFiltradas = coluna.tarefas;
+
+        if (searchTerm) {
+            tarefasFiltradas = tarefasFiltradas.filter(t =>
+                t.titulo.toLowerCase().includes(searchTerm) ||
+                t.id.includes(searchTerm) ||
+                t.responsavel.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        if (filtroEquipeVal) {
+            tarefasFiltradas = tarefasFiltradas.filter(t => t.equipe === filtroEquipeVal);
+        }
+
+        if (filtroStatusVal) {
+            tarefasFiltradas = tarefasFiltradas.filter(t => t.status === filtroStatusVal);
+        }
+
+        if (filtroAtrasadas) {
+            tarefasFiltradas = tarefasFiltradas.filter(t =>
+                t.alertas.some(a => a.includes('Atrasado') || a.includes('> 180'))
+            );
+        }
+
+        const colunaElement = criarElementoColuna(coluna.nome, tarefasFiltradas);
+        board.appendChild(colunaElement);
+    });
+}
+
+// ===== LIMPAR FILTROS =====
+function limparFiltros() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('filtroEquipe').value = '';
+    document.getElementById('filtroStatus').value = '';
+    document.getElementById('filtroAtrasadas').checked = false;
+    renderizarKanban();
+    salvarPreferencias();
+}
+
+// ===== CRIAR ELEMENTO COLUNA =====
+function criarElementoColuna(nome, tarefas) {
+    const coluna = document.createElement('div');
+    coluna.className = 'kanban-column';
+
+    const header = document.createElement('div');
+    header.className = 'column-header';
+    header.innerHTML = `
+        <div class="column-title">
+            <span>${nome}</span>
+        </div>
+        <span class="column-count">${tarefas.length}</span>
+    `;
+
+    const cardsContainer = document.createElement('div');
+    cardsContainer.className = 'column-cards';
+
+    tarefas.forEach(tarefa => {
+        const card = criarCardTarefa(tarefa);
+        cardsContainer.appendChild(card);
+    });
+
+    coluna.appendChild(header);
+    coluna.appendChild(cardsContainer);
+
+    return coluna;
+}
+
+// ===== CRIAR CARD DE TAREFA =====
+function criarCardTarefa(tarefa) {
+    const card = document.createElement('div');
+    card.className = 'task-card';
+
+    // Adicionar classes especiais
+    if (tarefa.alertas.some(a => a.includes('Atrasado') || a.includes('Atrasad'))) {
+        card.classList.add('atrasada');
+    }
+    if (tarefa.status.includes('Execução') || tarefa.status.includes('Execu')) {
+        card.classList.add('em-andamento');
+    }
+    if (tarefa.status.includes('Concluída') || tarefa.status.includes('Conclu')) {
+        card.classList.add('concluida');
+    }
+
+    // Não truncar título - exibir completo
+    const tituloTruncado = tarefa.titulo;
+
+    card.innerHTML = `
+        <div class="task-header">
+            <a href="https://ecgu.cgu.gov.br/auth/tarefa/${tarefa.id}"
+               target="_blank"
+               class="task-id-link"
+               title="Abrir no eCGU"
+               onclick="event.stopPropagation()">
+                [${tarefa.id}] 🔗
+            </a>
+            <span class="task-equipe">${tarefa.equipe}</span>
+        </div>
+        <div class="task-titulo">${tituloTruncado}</div>
+        ${tarefa.responsavel ? `<div class="task-responsavel">👤 ${tarefa.responsavel}</div>` : ''}
+        <div class="task-footer">
+            ${tarefa.alertas.slice(0, 2).map(alerta =>
+                `<span class="task-alerta">${alerta}</span>`
+            ).join('')}
+        </div>
+    `;
+
+    // Adicionar evento de clique para abrir modal (apenas no card, não no link)
+    card.addEventListener('click', () => abrirModal(tarefa));
+
+    return card;
+}
+
+// ===== MODAL =====
+function abrirModal(tarefa) {
+    document.getElementById('modalTitulo').textContent = tarefa.titulo;
+    document.getElementById('modalId').textContent = tarefa.id;
+    document.getElementById('modalEquipe').textContent = tarefa.equipe;
+    document.getElementById('modalStatus').textContent = tarefa.status;
+    document.getElementById('modalResponsavel').textContent = tarefa.responsavel || 'Não informado';
+
+    // Alertas
+    const alertasSection = document.getElementById('modalAlertasSection');
+    const alertasContainer = document.getElementById('modalAlertas');
+
+    if (tarefa.alertas && tarefa.alertas.length > 0) {
+        alertasSection.style.display = 'block';
+        alertasContainer.innerHTML = tarefa.alertas
+            .map(alerta => `<span class="alerta-badge">${alerta}</span>`)
+            .join('');
+    } else {
+        alertasSection.style.display = 'none';
+    }
+
+    // Tags
+    const tagsSection = document.getElementById('modalTagsSection');
+    const tagsContainer = document.getElementById('modalTags');
+
+    if (tarefa.tags && tarefa.tags.length > 0) {
+        tagsSection.style.display = 'block';
+        tagsContainer.innerHTML = tarefa.tags
+            .filter(tag => tag.trim())
+            .map(tag => `<span class="tag-badge">${tag}</span>`)
+            .join('');
+    } else {
+        tagsSection.style.display = 'none';
+    }
+
+    // Mostrar modal
+    document.getElementById('modalTarefa').classList.add('active');
+    document.getElementById('modalOverlay').classList.add('active');
+}
+
+function fecharModal() {
+    document.getElementById('modalTarefa').classList.remove('active');
+    document.getElementById('modalOverlay').classList.remove('active');
+}
+
+// ===== GRÁFICOS =====
+function renderizarGraficos() {
+    if (!dadosCompletos) return;
+
+    // Coletar tarefas ÚNICAS para os gráficos
+    const todasTarefas = [];
+    dadosCompletos.colunas.forEach(coluna => {
+        coluna.tarefas.forEach(tarefa => {
+            todasTarefas.push(tarefa);
+        });
+    });
+
+    const idsUnicos = new Set();
+    const tarefasUnicas = [];
+
+    todasTarefas.forEach(tarefa => {
+        if (!idsUnicos.has(tarefa.id)) {
+            idsUnicos.add(tarefa.id);
+            tarefasUnicas.push(tarefa);
+        }
+    });
+
+    // Contar por equipe (tarefas únicas)
+    const porEquipe = {};
+    tarefasUnicas.forEach(t => {
+        porEquipe[t.equipe] = (porEquipe[t.equipe] || 0) + 1;
+    });
+
+    // Contar por status (tarefas únicas)
+    const porStatus = {};
+    tarefasUnicas.forEach(t => {
+        porStatus[t.status] = (porStatus[t.status] || 0) + 1;
+    });
+
+    // Contar por tipo (usando colunas do Excel)
+    const porTipo = {};
+    dadosCompletos.colunas.forEach(coluna => {
+        if (coluna.tipo === 'tipo' && coluna.num_tarefas > 0) {
+            porTipo[coluna.nome] = coluna.num_tarefas;
+        }
+    });
+
+    renderizarGraficoEquipes(porEquipe);
+    renderizarGraficoStatus(porStatus);
+    renderizarGraficoTipos(porTipo);
+}
+
+function renderizarGraficoEquipes(dados) {
+    const ctx = document.getElementById('chartEquipes');
+
+    if (charts.equipes) {
+        charts.equipes.destroy();
+    }
+
+    const cores = {
+        'CGUPE': '#4A9FF5',
+        'NAC1': '#10B981',
+        'NAC2': '#F59E0B',
+        'NAC3': '#EF4444'
+    };
+
+    charts.equipes = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(dados),
+            datasets: [{
+                data: Object.values(dados),
+                backgroundColor: Object.keys(dados).map(eq => cores[eq] || '#8B5CF6'),
+                borderWidth: 3,
+                borderColor: 'rgba(30, 34, 62, 0.8)',
+                hoverBorderColor: '#E8EAED',
+                hoverBorderWidth: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#E8EAED',
+                        font: {
+                            size: 13,
+                            family: 'Inter',
+                            weight: '600'
+                        },
+                        padding: 16,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(30, 34, 62, 0.95)',
+                    titleColor: '#E8EAED',
+                    bodyColor: '#9AA0A6',
+                    borderColor: 'rgba(74, 159, 245, 0.3)',
+                    borderWidth: 1,
+                    padding: 12,
+                    displayColors: true,
+                    bodyFont: {
+                        family: 'Inter',
+                        weight: '500'
+                    },
+                    titleFont: {
+                        family: 'Inter',
+                        weight: '700'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderizarGraficoStatus(dados) {
+    const ctx = document.getElementById('chartStatus');
+
+    if (charts.status) {
+        charts.status.destroy();
+    }
+
+    // Pegar apenas os 8 status mais frequentes
+    const statusOrdenados = Object.entries(dados)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+
+    // Criar gradiente de cores azul para roxo
+    const cores = statusOrdenados.map((_, index) => {
+        const ratio = index / (statusOrdenados.length - 1);
+        const r = Math.floor(74 + (139 - 74) * ratio);
+        const g = Math.floor(159 + (92 - 159) * ratio);
+        const b = Math.floor(245 + (246 - 245) * ratio);
+        return `rgb(${r}, ${g}, ${b})`;
+    });
+
+    charts.status = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: statusOrdenados.map(s => s[0].length > 20 ? s[0].substring(0, 20) + '...' : s[0]),
+            datasets: [{
+                label: 'Quantidade',
+                data: statusOrdenados.map(s => s[1]),
+                backgroundColor: cores,
+                borderColor: 'rgba(255, 255, 255, 0.2)',
+                borderWidth: 1,
+                borderRadius: 8,
+                hoverBackgroundColor: '#8B5CF6',
+                hoverBorderColor: '#E8EAED',
+                hoverBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(30, 34, 62, 0.95)',
+                    titleColor: '#E8EAED',
+                    bodyColor: '#9AA0A6',
+                    borderColor: 'rgba(74, 159, 245, 0.3)',
+                    borderWidth: 1,
+                    padding: 12,
+                    bodyFont: {
+                        family: 'Inter',
+                        weight: '500'
+                    },
+                    titleFont: {
+                        family: 'Inter',
+                        weight: '700'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        color: '#9AA0A6',
+                        font: {
+                            family: 'Inter',
+                            size: 12,
+                            weight: '500'
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)',
+                        lineWidth: 1
+                    },
+                    border: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#9AA0A6',
+                        font: {
+                            family: 'Inter',
+                            size: 11,
+                            weight: '500'
+                        }
+                    },
+                    grid: {
+                        display: false
+                    },
+                    border: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderizarGraficoTipos(dados) {
+    const ctx = document.getElementById('chartTipos');
+
+    if (charts.tipos) {
+        charts.tipos.destroy();
+    }
+
+    if (!dados || Object.keys(dados).length === 0) {
+        ctx.parentElement.style.display = 'none';
+        return;
+    }
+
+    ctx.parentElement.style.display = 'block';
+
+    charts.tipos = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: Object.keys(dados),
+            datasets: [{
+                data: Object.values(dados),
+                backgroundColor: [
+                    '#4A9FF5',
+                    '#10B981',
+                    '#F59E0B',
+                    '#EF4444',
+                    '#8B5CF6',
+                    '#3B82F6'
+                ],
+                borderWidth: 3,
+                borderColor: 'rgba(30, 34, 62, 0.8)',
+                hoverBorderColor: '#E8EAED',
+                hoverBorderWidth: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#E8EAED',
+                        font: {
+                            size: 13,
+                            family: 'Inter',
+                            weight: '600'
+                        },
+                        padding: 16,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(30, 34, 62, 0.95)',
+                    titleColor: '#E8EAED',
+                    bodyColor: '#9AA0A6',
+                    borderColor: 'rgba(74, 159, 245, 0.3)',
+                    borderWidth: 1,
+                    padding: 12,
+                    displayColors: true,
+                    bodyFont: {
+                        family: 'Inter',
+                        weight: '500'
+                    },
+                    titleFont: {
+                        family: 'Inter',
+                        weight: '700'
+                    }
+                }
+            }
+        }
+    });
+}
+
+// ===== FUNÇÕES AUXILIARES =====
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function mostrarErro(mensagem) {
+    const dashboard = document.getElementById('dashboard');
+    dashboard.innerHTML = `
+        <div style="background: #FFEBE6; border: 2px solid #DE350B; border-radius: 8px; padding: 24px; text-align: center;">
+            <h2 style="color: #DE350B; margin-bottom: 16px;">⚠️ Erro</h2>
+            <p style="color: #172B4D; font-size: 1.1rem;">${mensagem}</p>
+            <p style="color: #5E6C84; margin-top: 16px;">
+                Execute o script <strong>extrair_tarefas_para_json.py</strong> primeiro para gerar os dados.
+            </p>
+        </div>
+    `;
+}
+
+// ===== SELETOR DE COLUNAS =====
+function abrirModalColunas() {
+    if (!dadosCompletos) return;
+
+    // Obter colunas da visualização atual
+    let colunas = dadosCompletos.colunas;
+
+    switch (viewAtual) {
+        case 'workflow':
+            colunas = colunas.filter(c => c.tipo === 'status');
+            break;
+        case 'equipes':
+            colunas = colunas.filter(c => c.tipo === 'equipe');
+            break;
+        case 'tipos':
+            colunas = colunas.filter(c => c.tipo === 'tipo');
+            break;
+    }
+
+    // Popular lista de colunas
+    const listaColunas = document.getElementById('listaColunas');
+    listaColunas.innerHTML = '';
+
+    colunas.forEach((coluna, index) => {
+        const isChecked = colunasVisiveis.size === 0 || colunasVisiveis.has(coluna.nome);
+
+        const itemDiv = document.createElement('div');
+        itemDiv.style.cssText = 'padding: 8px; border-bottom: 1px solid var(--bg-board); display: flex; align-items: center; gap: 8px;';
+
+        itemDiv.innerHTML = `
+            <input type="checkbox"
+                   id="col_${index}"
+                   data-coluna="${coluna.nome}"
+                   ${isChecked ? 'checked' : ''}
+                   style="width: 18px; height: 18px; cursor: pointer;">
+            <label for="col_${index}"
+                   style="cursor: pointer; flex: 1; user-select: none;">
+                ${coluna.nome} <span style="color: var(--text-secondary);">(${coluna.num_tarefas} tarefas)</span>
+            </label>
+        `;
+
+        listaColunas.appendChild(itemDiv);
+    });
+
+    // Mostrar modal
+    document.getElementById('modalSeletorColunas').classList.add('active');
+    document.getElementById('modalOverlay').classList.add('active');
+}
+
+function fecharModalColunas() {
+    document.getElementById('modalSeletorColunas').classList.remove('active');
+    document.getElementById('modalOverlay').classList.remove('active');
+}
+
+function selecionarTodasColunas() {
+    document.querySelectorAll('#listaColunas input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = true;
+    });
+}
+
+function deselecionarTodasColunas() {
+    document.querySelectorAll('#listaColunas input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+}
+
+function aplicarSelecaoColunas() {
+    // Obter checkboxes marcados
+    const checkboxes = document.querySelectorAll('#listaColunas input[type="checkbox"]');
+    colunasVisiveis.clear();
+
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            colunasVisiveis.add(checkbox.dataset.coluna);
+        }
+    });
+
+    // Se nenhuma coluna selecionada, mostrar todas
+    if (colunasVisiveis.size === 0) {
+        checkboxes.forEach(checkbox => {
+            colunasVisiveis.add(checkbox.dataset.coluna);
+        });
+    }
+
+    // Fechar modal e re-renderizar
+    fecharModalColunas();
+    renderizarKanban();
+
+    // Salvar preferências
+    salvarPreferencias();
+}
+
+// ===== NAVEGAÇÃO DO KANBAN =====
+function inicializarNavegacaoKanban() {
+    const boards = ['boardWorkflow', 'boardEquipes', 'boardTipos'];
+
+    boards.forEach(boardId => {
+        const board = document.getElementById(boardId);
+        if (!board) return;
+
+        // Scroll horizontal com mouse wheel
+        board.addEventListener('wheel', (e) => {
+            if (e.deltaY !== 0) {
+                e.preventDefault();
+                board.scrollLeft += e.deltaY;
+                atualizarNavegacao(boardId);
+            }
+        }, { passive: false });
+
+        // Atualizar navegação ao fazer scroll manual
+        board.addEventListener('scroll', () => {
+            atualizarNavegacao(boardId);
+        });
+
+        // Configurar botões de navegação
+        const btnPrev = document.querySelector(`.kanban-nav-prev[data-board="${boardId}"]`);
+        const btnNext = document.querySelector(`.kanban-nav-next[data-board="${boardId}"]`);
+
+        if (btnPrev) {
+            btnPrev.addEventListener('click', () => {
+                navegarBoard(boardId, 'prev');
+            });
+        }
+
+        if (btnNext) {
+            btnNext.addEventListener('click', () => {
+                navegarBoard(boardId, 'next');
+            });
+        }
+
+        // Navegação por teclado (apenas quando board está visível)
+        document.addEventListener('keydown', (e) => {
+            const viewAtiva = document.querySelector('.kanban-view.active');
+            if (!viewAtiva) return;
+
+            const boardAtivo = viewAtiva.querySelector('.kanban-board');
+            if (boardAtivo?.id !== boardId) return;
+
+            // Verificar se não está focado em input/textarea
+            if (document.activeElement.tagName === 'INPUT' ||
+                document.activeElement.tagName === 'TEXTAREA') {
+                return;
+            }
+
+            switch(e.key) {
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    navegarBoard(boardId, 'prev');
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    navegarBoard(boardId, 'next');
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    board.scrollLeft = 0;
+                    atualizarNavegacao(boardId);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    board.scrollLeft = board.scrollWidth;
+                    atualizarNavegacao(boardId);
+                    break;
+            }
+        });
+
+        // Atualizar navegação inicialmente
+        setTimeout(() => atualizarNavegacao(boardId), 100);
+    });
+}
+
+function navegarBoard(boardId, direction) {
+    const board = document.getElementById(boardId);
+    if (!board) return;
+
+    const scrollAmount = 440; // Largura da coluna (420px) + gap (20px)
+
+    if (direction === 'prev') {
+        board.scrollLeft -= scrollAmount;
+    } else {
+        board.scrollLeft += scrollAmount;
+    }
+
+    atualizarNavegacao(boardId);
+}
+
+function atualizarNavegacao(boardId) {
+    const board = document.getElementById(boardId);
+    if (!board) return;
+
+    const scrollLeft = board.scrollLeft;
+    const scrollWidth = board.scrollWidth;
+    const clientWidth = board.clientWidth;
+    const maxScroll = scrollWidth - clientWidth;
+
+    // Atualizar barra de progresso
+    const progressFill = document.querySelector(`.kanban-progress-fill[data-board="${boardId}"]`);
+    const progressText = document.querySelector(`.kanban-progress-text[data-board="${boardId}"]`);
+
+    if (progressFill && progressText) {
+        const percentage = maxScroll > 0 ? Math.round((scrollLeft / maxScroll) * 100) : 0;
+        progressFill.style.width = `${percentage}%`;
+        progressText.textContent = `${percentage}%`;
+    }
+
+    // Atualizar estado dos botões
+    const btnPrev = document.querySelector(`.kanban-nav-prev[data-board="${boardId}"]`);
+    const btnNext = document.querySelector(`.kanban-nav-next[data-board="${boardId}"]`);
+
+    if (btnPrev) {
+        btnPrev.disabled = scrollLeft <= 1;
+    }
+
+    if (btnNext) {
+        btnNext.disabled = scrollLeft >= maxScroll - 1;
+    }
+
+    // Atualizar fade gradients
+    const boardWrapper = board.parentElement;
+    const fadeLeft = boardWrapper?.querySelector('.kanban-board-fade-left');
+    const fadeRight = boardWrapper?.querySelector('.kanban-board-fade-right');
+
+    if (fadeLeft) {
+        fadeLeft.classList.toggle('active', scrollLeft > 10);
+    }
+
+    if (fadeRight) {
+        fadeRight.classList.toggle('active', scrollLeft < maxScroll - 10);
+    }
+}
+
+// Atualizar navegação quando o Kanban for renderizado
+const renderizarKanbanOriginal = renderizarKanban;
+renderizarKanban = function() {
+    renderizarKanbanOriginal.apply(this, arguments);
+
+    // Aguardar um pouco para garantir que as colunas foram renderizadas
+    setTimeout(() => {
+        const viewAtiva = document.querySelector('.kanban-view.active');
+        if (viewAtiva) {
+            const board = viewAtiva.querySelector('.kanban-board');
+            if (board) {
+                atualizarNavegacao(board.id);
+            }
+        }
+    }, 100);
+};
+
+// Tornar funções globais acessíveis
+window.fecharModal = fecharModal;
+window.fecharModalColunas = fecharModalColunas;
+window.selecionarTodasColunas = selecionarTodasColunas;
+window.deselecionarTodasColunas = deselecionarTodasColunas;
+window.aplicarSelecaoColunas = aplicarSelecaoColunas;
+
+// Inicializar navegação quando o documento estiver pronto
+document.addEventListener('DOMContentLoaded', () => {
+    inicializarNavegacaoKanban();
+});
+
+    </script>
+
+    <!-- Biblioteca Chart.js (para gráficos) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- JavaScript da aplicação (modificado para standalone) -->
+    <script>
+// ===== VARIÁVEIS GLOBAIS =====
+let dadosCompletos = null;
+let viewAtual = 'workflow';
+let charts = {};
+let colunasVisiveis = new Set(); // Armazena IDs das colunas visíveis
+
+// ===== INICIALIZAÇÃO =====
+document.addEventListener('DOMContentLoaded', () => {
+    carregarPreferencias(); // Carregar preferências salvas
+    carregarDados();
+    configurarEventListeners();
+});
+
+// ===== GERENCIAMENTO DE PREFERÊNCIAS =====
+function salvarPreferencias() {
+    const preferencias = {
+        viewAtual: viewAtual,
+        colunasVisiveis: Array.from(colunasVisiveis),
+        filtroEquipe: document.getElementById('filtroEquipe')?.value || '',
+        filtroStatus: document.getElementById('filtroStatus')?.value || '',
+        filtroAtrasadas: document.getElementById('filtroAtrasadas')?.checked || false
+    };
+
+    try {
+        localStorage.setItem('cgupe_kanban_preferencias', JSON.stringify(preferencias));
+        console.log('✓ Preferências salvas');
+    } catch (error) {
+        console.warn('Não foi possível salvar preferências:', error);
+    }
+}
+
+function carregarPreferencias() {
+    try {
+        const preferenciasStr = localStorage.getItem('cgupe_kanban_preferencias');
+        if (!preferenciasStr) return;
+
+        const preferencias = JSON.parse(preferenciasStr);
+
+        // Restaurar visualização
+        if (preferencias.viewAtual) {
+            viewAtual = preferencias.viewAtual;
+        }
+
+        // Restaurar colunas visíveis
+        if (preferencias.colunasVisiveis && Array.isArray(preferencias.colunasVisiveis)) {
+            colunasVisiveis = new Set(preferencias.colunasVisiveis);
+        }
+
+        // Restaurar filtros (será aplicado após DOM carregar)
+        if (preferencias.filtroEquipe !== undefined) {
+            setTimeout(() => {
+                const elemEquipe = document.getElementById('filtroEquipe');
+                if (elemEquipe) elemEquipe.value = preferencias.filtroEquipe;
+            }, 100);
+        }
+
+        if (preferencias.filtroStatus !== undefined) {
+            setTimeout(() => {
+                const elemStatus = document.getElementById('filtroStatus');
+                if (elemStatus) elemStatus.value = preferencias.filtroStatus;
+            }, 100);
+        }
+
+        if (preferencias.filtroAtrasadas !== undefined) {
+            setTimeout(() => {
+                const elemAtrasadas = document.getElementById('filtroAtrasadas');
+                if (elemAtrasadas) elemAtrasadas.checked = preferencias.filtroAtrasadas;
+            }, 100);
+        }
+
+        console.log('✓ Preferências carregadas');
+    } catch (error) {
+        console.warn('Não foi possível carregar preferências:', error);
+    }
+}
+
+function limparPreferencias() {
+    try {
+        localStorage.removeItem('cgupe_kanban_preferencias');
+        console.log('✓ Preferências removidas');
+    } catch (error) {
+        console.warn('Não foi possível limpar preferências:', error);
+    }
+}
+
+// ===== CARREGAR DADOS =====
+async function carregarDados() {
+    try {
+        // Dados embutidos no HTML - não precisa fazer fetch
+        if (!window.DADOS_KANBAN) {
+            throw new Error('Dados não encontrados. Arquivo standalone corrompido.');
+        }
+
+        dadosCompletos = window.DADOS_KANBAN;
+
+        // Atualizar interface
+        atualizarDataExtracao();
+        atualizarMetricas();
+        popularFiltros();
+        renderizarGraficos();
+
+        // Restaurar visualização ativa
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.view === viewAtual);
+        });
+        document.querySelectorAll('.kanban-view').forEach(viewEl => {
+            viewEl.classList.remove('active');
+        });
+        document.getElementById(`view${capitalize(viewAtual)}`).classList.add('active');
+
+        renderizarKanban();
+
+        console.log('✓ Dados carregados:', dadosCompletos.colunas.length, 'colunas');
+    } catch (error) {
+        console.error('❌ Erro ao carregar dados:', error);
+        mostrarErro('Erro ao carregar dados. Verifique se o arquivo tarefas_kanban.json existe.');
+    }
+}
+
+// ===== CONFIGURAR EVENT LISTENERS =====
+function configurarEventListeners() {
+    // Seletor de visualização
+    document.querySelectorAll('.view-btn[data-view]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const view = btn.dataset.view;
+            trocarVisualizacao(view);
+        });
+    });
+
+    // Botão do seletor de colunas
+    document.getElementById('btnSeletorColunas').addEventListener('click', abrirModalColunas);
+
+    // Filtros
+    document.getElementById('searchInput').addEventListener('input', renderizarKanban);
+    document.getElementById('filtroEquipe').addEventListener('change', () => {
+        renderizarKanban();
+        salvarPreferencias();
+    });
+    document.getElementById('filtroStatus').addEventListener('change', () => {
+        renderizarKanban();
+        salvarPreferencias();
+    });
+    document.getElementById('filtroAtrasadas').addEventListener('change', () => {
+        renderizarKanban();
+        salvarPreferencias();
+    });
+    document.getElementById('btnLimparFiltros').addEventListener('click', limparFiltros);
+}
+
+// ===== ATUALIZAR DATA DE EXTRAÇÃO =====
+function atualizarDataExtracao() {
+    const dataElement = document.getElementById('dataAtualizacao');
+    if (dadosCompletos && dadosCompletos.data_extracao) {
+        const data = new Date(dadosCompletos.data_extracao);
+        dataElement.textContent = data.toLocaleString('pt-BR');
+    }
+}
+
+// ===== ATUALIZAR MÉTRICAS (TAREFAS ÚNICAS) =====
+function atualizarMetricas() {
+    if (!dadosCompletos) return;
+
+    // Coletar todas as tarefas de todas as colunas
+    const todasTarefas = [];
+    dadosCompletos.colunas.forEach(coluna => {
+        coluna.tarefas.forEach(tarefa => {
+            todasTarefas.push(tarefa);
+        });
+    });
+
+    // Extrair IDs únicos para estatísticas do dashboard
+    const idsUnicos = new Set();
+    const tarefasUnicas = [];
+    const tarefasMap = new Map();
+
+    todasTarefas.forEach(tarefa => {
+        if (!idsUnicos.has(tarefa.id)) {
+            idsUnicos.add(tarefa.id);
+            tarefasUnicas.push(tarefa);
+            tarefasMap.set(tarefa.id, tarefa);
+        }
+    });
+
+    // Calcular estatísticas de tarefas ÚNICAS
+    let concluidas = 0;
+    let emAndamento = 0;
+    let atrasadas = 0;
+
+    tarefasUnicas.forEach(tarefa => {
+        const status = tarefa.status.toLowerCase();
+
+        if (status.includes('conclu')) {
+            concluidas++;
+        } else if (status.includes('execu')) {
+            emAndamento++;
+        }
+
+        if (tarefa.alertas && tarefa.alertas.length > 0) {
+            if (tarefa.alertas.some(a => a.includes('Atrasado') || a.includes('> 180'))) {
+                atrasadas++;
+            }
+        }
+    });
+
+    // Atualizar dashboard com tarefas ÚNICAS
+    document.getElementById('totalTarefas').textContent = tarefasUnicas.length;
+    document.getElementById('tarefasConcluidas').textContent = concluidas;
+    document.getElementById('tarefasEmAndamento').textContent = emAndamento;
+    document.getElementById('tarefasAtrasadas').textContent = atrasadas;
+}
+
+// ===== POPULAR FILTROS =====
+function popularFiltros() {
+    if (!dadosCompletos) return;
+
+    const selectStatus = document.getElementById('filtroStatus');
+    const statusSet = new Set();
+
+    // Coletar todos os status únicos
+    dadosCompletos.colunas.forEach(coluna => {
+        if (coluna.tipo === 'status') {
+            statusSet.add(coluna.nome);
+        }
+    });
+
+    // Ordenar alfabeticamente
+    const statusOrdenados = Array.from(statusSet).sort();
+
+    statusOrdenados.forEach(status => {
+        const option = document.createElement('option');
+        option.value = status;
+        option.textContent = status;
+        selectStatus.appendChild(option);
+    });
+}
+
+// ===== TROCAR VISUALIZAÇÃO =====
+function trocarVisualizacao(view) {
+    viewAtual = view;
+
+    // Atualizar botões
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === view);
+    });
+
+    // Atualizar views
+    document.querySelectorAll('.kanban-view').forEach(viewEl => {
+        viewEl.classList.remove('active');
+    });
+    document.getElementById(`view${capitalize(view)}`).classList.add('active');
+
+    // Renderizar o Kanban da view selecionada
+    renderizarKanban();
+
+    // Salvar preferência
+    salvarPreferencias();
+}
+
+// ===== RENDERIZAR KANBAN =====
+function renderizarKanban() {
+    if (!dadosCompletos) return;
+
+    const boardId = `board${capitalize(viewAtual)}`;
+    const board = document.getElementById(boardId);
+    board.innerHTML = '';
+
+    // Obter filtros
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const filtroEquipeVal = document.getElementById('filtroEquipe').value;
+    const filtroStatusVal = document.getElementById('filtroStatus').value;
+    const filtroAtrasadas = document.getElementById('filtroAtrasadas').checked;
+
+    // Filtrar colunas baseado na visualização
+    let colunasExibir = dadosCompletos.colunas;
+
+    switch (viewAtual) {
+        case 'workflow':
+            colunasExibir = colunasExibir.filter(c => c.tipo === 'status');
+            break;
+        case 'equipes':
+            colunasExibir = colunasExibir.filter(c => c.tipo === 'equipe');
+            break;
+        case 'tipos':
+            colunasExibir = colunasExibir.filter(c => c.tipo === 'tipo');
+            break;
+    }
+
+    // Filtrar por colunas selecionadas (se houver seleção)
+    if (colunasVisiveis.size > 0) {
+        colunasExibir = colunasExibir.filter(c => colunasVisiveis.has(c.nome));
+    }
+
+    // Renderizar cada coluna
+    colunasExibir.forEach(coluna => {
+        // Aplicar filtros nas tarefas
+        let tarefasFiltradas = coluna.tarefas;
+
+        if (searchTerm) {
+            tarefasFiltradas = tarefasFiltradas.filter(t =>
+                t.titulo.toLowerCase().includes(searchTerm) ||
+                t.id.includes(searchTerm) ||
+                t.responsavel.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        if (filtroEquipeVal) {
+            tarefasFiltradas = tarefasFiltradas.filter(t => t.equipe === filtroEquipeVal);
+        }
+
+        if (filtroStatusVal) {
+            tarefasFiltradas = tarefasFiltradas.filter(t => t.status === filtroStatusVal);
+        }
+
+        if (filtroAtrasadas) {
+            tarefasFiltradas = tarefasFiltradas.filter(t =>
+                t.alertas.some(a => a.includes('Atrasado') || a.includes('> 180'))
+            );
+        }
+
+        const colunaElement = criarElementoColuna(coluna.nome, tarefasFiltradas);
+        board.appendChild(colunaElement);
+    });
+}
+
+// ===== LIMPAR FILTROS =====
+function limparFiltros() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('filtroEquipe').value = '';
+    document.getElementById('filtroStatus').value = '';
+    document.getElementById('filtroAtrasadas').checked = false;
+    renderizarKanban();
+    salvarPreferencias();
+}
+
+// ===== CRIAR ELEMENTO COLUNA =====
+function criarElementoColuna(nome, tarefas) {
+    const coluna = document.createElement('div');
+    coluna.className = 'kanban-column';
+
+    const header = document.createElement('div');
+    header.className = 'column-header';
+    header.innerHTML = `
+        <div class="column-title">
+            <span>${nome}</span>
+        </div>
+        <span class="column-count">${tarefas.length}</span>
+    `;
+
+    const cardsContainer = document.createElement('div');
+    cardsContainer.className = 'column-cards';
+
+    tarefas.forEach(tarefa => {
+        const card = criarCardTarefa(tarefa);
+        cardsContainer.appendChild(card);
+    });
+
+    coluna.appendChild(header);
+    coluna.appendChild(cardsContainer);
+
+    return coluna;
+}
+
+// ===== CRIAR CARD DE TAREFA =====
+function criarCardTarefa(tarefa) {
+    const card = document.createElement('div');
+    card.className = 'task-card';
+
+    // Adicionar classes especiais
+    if (tarefa.alertas.some(a => a.includes('Atrasado') || a.includes('Atrasad'))) {
+        card.classList.add('atrasada');
+    }
+    if (tarefa.status.includes('Execução') || tarefa.status.includes('Execu')) {
+        card.classList.add('em-andamento');
+    }
+    if (tarefa.status.includes('Concluída') || tarefa.status.includes('Conclu')) {
+        card.classList.add('concluida');
+    }
+
+    // Não truncar título - exibir completo
+    const tituloTruncado = tarefa.titulo;
+
+    card.innerHTML = `
+        <div class="task-header">
+            <a href="https://ecgu.cgu.gov.br/auth/tarefa/${tarefa.id}"
+               target="_blank"
+               class="task-id-link"
+               title="Abrir no eCGU"
+               onclick="event.stopPropagation()">
+                [${tarefa.id}] 🔗
+            </a>
+            <span class="task-equipe">${tarefa.equipe}</span>
+        </div>
+        <div class="task-titulo">${tituloTruncado}</div>
+        ${tarefa.responsavel ? `<div class="task-responsavel">👤 ${tarefa.responsavel}</div>` : ''}
+        <div class="task-footer">
+            ${tarefa.alertas.slice(0, 2).map(alerta =>
+                `<span class="task-alerta">${alerta}</span>`
+            ).join('')}
+        </div>
+    `;
+
+    // Adicionar evento de clique para abrir modal (apenas no card, não no link)
+    card.addEventListener('click', () => abrirModal(tarefa));
+
+    return card;
+}
+
+// ===== MODAL =====
+function abrirModal(tarefa) {
+    document.getElementById('modalTitulo').textContent = tarefa.titulo;
+    document.getElementById('modalId').textContent = tarefa.id;
+    document.getElementById('modalEquipe').textContent = tarefa.equipe;
+    document.getElementById('modalStatus').textContent = tarefa.status;
+    document.getElementById('modalResponsavel').textContent = tarefa.responsavel || 'Não informado';
+
+    // Alertas
+    const alertasSection = document.getElementById('modalAlertasSection');
+    const alertasContainer = document.getElementById('modalAlertas');
+
+    if (tarefa.alertas && tarefa.alertas.length > 0) {
+        alertasSection.style.display = 'block';
+        alertasContainer.innerHTML = tarefa.alertas
+            .map(alerta => `<span class="alerta-badge">${alerta}</span>`)
+            .join('');
+    } else {
+        alertasSection.style.display = 'none';
+    }
+
+    // Tags
+    const tagsSection = document.getElementById('modalTagsSection');
+    const tagsContainer = document.getElementById('modalTags');
+
+    if (tarefa.tags && tarefa.tags.length > 0) {
+        tagsSection.style.display = 'block';
+        tagsContainer.innerHTML = tarefa.tags
+            .filter(tag => tag.trim())
+            .map(tag => `<span class="tag-badge">${tag}</span>`)
+            .join('');
+    } else {
+        tagsSection.style.display = 'none';
+    }
+
+    // Mostrar modal
+    document.getElementById('modalTarefa').classList.add('active');
+    document.getElementById('modalOverlay').classList.add('active');
+}
+
+function fecharModal() {
+    document.getElementById('modalTarefa').classList.remove('active');
+    document.getElementById('modalOverlay').classList.remove('active');
+}
+
+// ===== GRÁFICOS =====
+function renderizarGraficos() {
+    if (!dadosCompletos) return;
+
+    // Coletar tarefas ÚNICAS para os gráficos
+    const todasTarefas = [];
+    dadosCompletos.colunas.forEach(coluna => {
+        coluna.tarefas.forEach(tarefa => {
+            todasTarefas.push(tarefa);
+        });
+    });
+
+    const idsUnicos = new Set();
+    const tarefasUnicas = [];
+
+    todasTarefas.forEach(tarefa => {
+        if (!idsUnicos.has(tarefa.id)) {
+            idsUnicos.add(tarefa.id);
+            tarefasUnicas.push(tarefa);
+        }
+    });
+
+    // Contar por equipe (tarefas únicas)
+    const porEquipe = {};
+    tarefasUnicas.forEach(t => {
+        porEquipe[t.equipe] = (porEquipe[t.equipe] || 0) + 1;
+    });
+
+    // Contar por status (tarefas únicas)
+    const porStatus = {};
+    tarefasUnicas.forEach(t => {
+        porStatus[t.status] = (porStatus[t.status] || 0) + 1;
+    });
+
+    // Contar por tipo (usando colunas do Excel)
+    const porTipo = {};
+    dadosCompletos.colunas.forEach(coluna => {
+        if (coluna.tipo === 'tipo' && coluna.num_tarefas > 0) {
+            porTipo[coluna.nome] = coluna.num_tarefas;
+        }
+    });
+
+    renderizarGraficoEquipes(porEquipe);
+    renderizarGraficoStatus(porStatus);
+    renderizarGraficoTipos(porTipo);
+}
+
+function renderizarGraficoEquipes(dados) {
+    const ctx = document.getElementById('chartEquipes');
+
+    if (charts.equipes) {
+        charts.equipes.destroy();
+    }
+
+    const cores = {
+        'CGUPE': '#4A9FF5',
+        'NAC1': '#10B981',
+        'NAC2': '#F59E0B',
+        'NAC3': '#EF4444'
+    };
+
+    charts.equipes = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(dados),
+            datasets: [{
+                data: Object.values(dados),
+                backgroundColor: Object.keys(dados).map(eq => cores[eq] || '#8B5CF6'),
+                borderWidth: 3,
+                borderColor: 'rgba(30, 34, 62, 0.8)',
+                hoverBorderColor: '#E8EAED',
+                hoverBorderWidth: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#E8EAED',
+                        font: {
+                            size: 13,
+                            family: 'Inter',
+                            weight: '600'
+                        },
+                        padding: 16,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(30, 34, 62, 0.95)',
+                    titleColor: '#E8EAED',
+                    bodyColor: '#9AA0A6',
+                    borderColor: 'rgba(74, 159, 245, 0.3)',
+                    borderWidth: 1,
+                    padding: 12,
+                    displayColors: true,
+                    bodyFont: {
+                        family: 'Inter',
+                        weight: '500'
+                    },
+                    titleFont: {
+                        family: 'Inter',
+                        weight: '700'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderizarGraficoStatus(dados) {
+    const ctx = document.getElementById('chartStatus');
+
+    if (charts.status) {
+        charts.status.destroy();
+    }
+
+    // Pegar apenas os 8 status mais frequentes
+    const statusOrdenados = Object.entries(dados)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+
+    // Criar gradiente de cores azul para roxo
+    const cores = statusOrdenados.map((_, index) => {
+        const ratio = index / (statusOrdenados.length - 1);
+        const r = Math.floor(74 + (139 - 74) * ratio);
+        const g = Math.floor(159 + (92 - 159) * ratio);
+        const b = Math.floor(245 + (246 - 245) * ratio);
+        return `rgb(${r}, ${g}, ${b})`;
+    });
+
+    charts.status = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: statusOrdenados.map(s => s[0].length > 20 ? s[0].substring(0, 20) + '...' : s[0]),
+            datasets: [{
+                label: 'Quantidade',
+                data: statusOrdenados.map(s => s[1]),
+                backgroundColor: cores,
+                borderColor: 'rgba(255, 255, 255, 0.2)',
+                borderWidth: 1,
+                borderRadius: 8,
+                hoverBackgroundColor: '#8B5CF6',
+                hoverBorderColor: '#E8EAED',
+                hoverBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(30, 34, 62, 0.95)',
+                    titleColor: '#E8EAED',
+                    bodyColor: '#9AA0A6',
+                    borderColor: 'rgba(74, 159, 245, 0.3)',
+                    borderWidth: 1,
+                    padding: 12,
+                    bodyFont: {
+                        family: 'Inter',
+                        weight: '500'
+                    },
+                    titleFont: {
+                        family: 'Inter',
+                        weight: '700'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        color: '#9AA0A6',
+                        font: {
+                            family: 'Inter',
+                            size: 12,
+                            weight: '500'
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)',
+                        lineWidth: 1
+                    },
+                    border: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#9AA0A6',
+                        font: {
+                            family: 'Inter',
+                            size: 11,
+                            weight: '500'
+                        }
+                    },
+                    grid: {
+                        display: false
+                    },
+                    border: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderizarGraficoTipos(dados) {
+    const ctx = document.getElementById('chartTipos');
+
+    if (charts.tipos) {
+        charts.tipos.destroy();
+    }
+
+    if (!dados || Object.keys(dados).length === 0) {
+        ctx.parentElement.style.display = 'none';
+        return;
+    }
+
+    ctx.parentElement.style.display = 'block';
+
+    charts.tipos = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: Object.keys(dados),
+            datasets: [{
+                data: Object.values(dados),
+                backgroundColor: [
+                    '#4A9FF5',
+                    '#10B981',
+                    '#F59E0B',
+                    '#EF4444',
+                    '#8B5CF6',
+                    '#3B82F6'
+                ],
+                borderWidth: 3,
+                borderColor: 'rgba(30, 34, 62, 0.8)',
+                hoverBorderColor: '#E8EAED',
+                hoverBorderWidth: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#E8EAED',
+                        font: {
+                            size: 13,
+                            family: 'Inter',
+                            weight: '600'
+                        },
+                        padding: 16,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(30, 34, 62, 0.95)',
+                    titleColor: '#E8EAED',
+                    bodyColor: '#9AA0A6',
+                    borderColor: 'rgba(74, 159, 245, 0.3)',
+                    borderWidth: 1,
+                    padding: 12,
+                    displayColors: true,
+                    bodyFont: {
+                        family: 'Inter',
+                        weight: '500'
+                    },
+                    titleFont: {
+                        family: 'Inter',
+                        weight: '700'
+                    }
+                }
+            }
+        }
+    });
+}
+
+// ===== FUNÇÕES AUXILIARES =====
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function mostrarErro(mensagem) {
+    const dashboard = document.getElementById('dashboard');
+    dashboard.innerHTML = `
+        <div style="background: #FFEBE6; border: 2px solid #DE350B; border-radius: 8px; padding: 24px; text-align: center;">
+            <h2 style="color: #DE350B; margin-bottom: 16px;">⚠️ Erro</h2>
+            <p style="color: #172B4D; font-size: 1.1rem;">${mensagem}</p>
+            <p style="color: #5E6C84; margin-top: 16px;">
+                Execute o script <strong>extrair_tarefas_para_json.py</strong> primeiro para gerar os dados.
+            </p>
+        </div>
+    `;
+}
+
+// ===== SELETOR DE COLUNAS =====
+function abrirModalColunas() {
+    if (!dadosCompletos) return;
+
+    // Obter colunas da visualização atual
+    let colunas = dadosCompletos.colunas;
+
+    switch (viewAtual) {
+        case 'workflow':
+            colunas = colunas.filter(c => c.tipo === 'status');
+            break;
+        case 'equipes':
+            colunas = colunas.filter(c => c.tipo === 'equipe');
+            break;
+        case 'tipos':
+            colunas = colunas.filter(c => c.tipo === 'tipo');
+            break;
+    }
+
+    // Popular lista de colunas
+    const listaColunas = document.getElementById('listaColunas');
+    listaColunas.innerHTML = '';
+
+    colunas.forEach((coluna, index) => {
+        const isChecked = colunasVisiveis.size === 0 || colunasVisiveis.has(coluna.nome);
+
+        const itemDiv = document.createElement('div');
+        itemDiv.style.cssText = 'padding: 8px; border-bottom: 1px solid var(--bg-board); display: flex; align-items: center; gap: 8px;';
+
+        itemDiv.innerHTML = `
+            <input type="checkbox"
+                   id="col_${index}"
+                   data-coluna="${coluna.nome}"
+                   ${isChecked ? 'checked' : ''}
+                   style="width: 18px; height: 18px; cursor: pointer;">
+            <label for="col_${index}"
+                   style="cursor: pointer; flex: 1; user-select: none;">
+                ${coluna.nome} <span style="color: var(--text-secondary);">(${coluna.num_tarefas} tarefas)</span>
+            </label>
+        `;
+
+        listaColunas.appendChild(itemDiv);
+    });
+
+    // Mostrar modal
+    document.getElementById('modalSeletorColunas').classList.add('active');
+    document.getElementById('modalOverlay').classList.add('active');
+}
+
+function fecharModalColunas() {
+    document.getElementById('modalSeletorColunas').classList.remove('active');
+    document.getElementById('modalOverlay').classList.remove('active');
+}
+
+function selecionarTodasColunas() {
+    document.querySelectorAll('#listaColunas input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = true;
+    });
+}
+
+function deselecionarTodasColunas() {
+    document.querySelectorAll('#listaColunas input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+}
+
+function aplicarSelecaoColunas() {
+    // Obter checkboxes marcados
+    const checkboxes = document.querySelectorAll('#listaColunas input[type="checkbox"]');
+    colunasVisiveis.clear();
+
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            colunasVisiveis.add(checkbox.dataset.coluna);
+        }
+    });
+
+    // Se nenhuma coluna selecionada, mostrar todas
+    if (colunasVisiveis.size === 0) {
+        checkboxes.forEach(checkbox => {
+            colunasVisiveis.add(checkbox.dataset.coluna);
+        });
+    }
+
+    // Fechar modal e re-renderizar
+    fecharModalColunas();
+    renderizarKanban();
+
+    // Salvar preferências
+    salvarPreferencias();
+}
+
+// ===== NAVEGAÇÃO DO KANBAN =====
+function inicializarNavegacaoKanban() {
+    const boards = ['boardWorkflow', 'boardEquipes', 'boardTipos'];
+
+    boards.forEach(boardId => {
+        const board = document.getElementById(boardId);
+        if (!board) return;
+
+        // Scroll horizontal com mouse wheel
+        board.addEventListener('wheel', (e) => {
+            if (e.deltaY !== 0) {
+                e.preventDefault();
+                board.scrollLeft += e.deltaY;
+                atualizarNavegacao(boardId);
+            }
+        }, { passive: false });
+
+        // Atualizar navegação ao fazer scroll manual
+        board.addEventListener('scroll', () => {
+            atualizarNavegacao(boardId);
+        });
+
+        // Configurar botões de navegação
+        const btnPrev = document.querySelector(`.kanban-nav-prev[data-board="${boardId}"]`);
+        const btnNext = document.querySelector(`.kanban-nav-next[data-board="${boardId}"]`);
+
+        if (btnPrev) {
+            btnPrev.addEventListener('click', () => {
+                navegarBoard(boardId, 'prev');
+            });
+        }
+
+        if (btnNext) {
+            btnNext.addEventListener('click', () => {
+                navegarBoard(boardId, 'next');
+            });
+        }
+
+        // Navegação por teclado (apenas quando board está visível)
+        document.addEventListener('keydown', (e) => {
+            const viewAtiva = document.querySelector('.kanban-view.active');
+            if (!viewAtiva) return;
+
+            const boardAtivo = viewAtiva.querySelector('.kanban-board');
+            if (boardAtivo?.id !== boardId) return;
+
+            // Verificar se não está focado em input/textarea
+            if (document.activeElement.tagName === 'INPUT' ||
+                document.activeElement.tagName === 'TEXTAREA') {
+                return;
+            }
+
+            switch(e.key) {
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    navegarBoard(boardId, 'prev');
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    navegarBoard(boardId, 'next');
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    board.scrollLeft = 0;
+                    atualizarNavegacao(boardId);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    board.scrollLeft = board.scrollWidth;
+                    atualizarNavegacao(boardId);
+                    break;
+            }
+        });
+
+        // Atualizar navegação inicialmente
+        setTimeout(() => atualizarNavegacao(boardId), 100);
+    });
+}
+
+function navegarBoard(boardId, direction) {
+    const board = document.getElementById(boardId);
+    if (!board) return;
+
+    const scrollAmount = 440; // Largura da coluna (420px) + gap (20px)
+
+    if (direction === 'prev') {
+        board.scrollLeft -= scrollAmount;
+    } else {
+        board.scrollLeft += scrollAmount;
+    }
+
+    atualizarNavegacao(boardId);
+}
+
+function atualizarNavegacao(boardId) {
+    const board = document.getElementById(boardId);
+    if (!board) return;
+
+    const scrollLeft = board.scrollLeft;
+    const scrollWidth = board.scrollWidth;
+    const clientWidth = board.clientWidth;
+    const maxScroll = scrollWidth - clientWidth;
+
+    // Atualizar barra de progresso
+    const progressFill = document.querySelector(`.kanban-progress-fill[data-board="${boardId}"]`);
+    const progressText = document.querySelector(`.kanban-progress-text[data-board="${boardId}"]`);
+
+    if (progressFill && progressText) {
+        const percentage = maxScroll > 0 ? Math.round((scrollLeft / maxScroll) * 100) : 0;
+        progressFill.style.width = `${percentage}%`;
+        progressText.textContent = `${percentage}%`;
+    }
+
+    // Atualizar estado dos botões
+    const btnPrev = document.querySelector(`.kanban-nav-prev[data-board="${boardId}"]`);
+    const btnNext = document.querySelector(`.kanban-nav-next[data-board="${boardId}"]`);
+
+    if (btnPrev) {
+        btnPrev.disabled = scrollLeft <= 1;
+    }
+
+    if (btnNext) {
+        btnNext.disabled = scrollLeft >= maxScroll - 1;
+    }
+
+    // Atualizar fade gradients
+    const boardWrapper = board.parentElement;
+    const fadeLeft = boardWrapper?.querySelector('.kanban-board-fade-left');
+    const fadeRight = boardWrapper?.querySelector('.kanban-board-fade-right');
+
+    if (fadeLeft) {
+        fadeLeft.classList.toggle('active', scrollLeft > 10);
+    }
+
+    if (fadeRight) {
+        fadeRight.classList.toggle('active', scrollLeft < maxScroll - 10);
+    }
+}
+
+// Atualizar navegação quando o Kanban for renderizado
+const renderizarKanbanOriginal = renderizarKanban;
+renderizarKanban = function() {
+    renderizarKanbanOriginal.apply(this, arguments);
+
+    // Aguardar um pouco para garantir que as colunas foram renderizadas
+    setTimeout(() => {
+        const viewAtiva = document.querySelector('.kanban-view.active');
+        if (viewAtiva) {
+            const board = viewAtiva.querySelector('.kanban-board');
+            if (board) {
+                atualizarNavegacao(board.id);
+            }
+        }
+    }, 100);
+};
+
+// Tornar funções globais acessíveis
+window.fecharModal = fecharModal;
+window.fecharModalColunas = fecharModalColunas;
+window.selecionarTodasColunas = selecionarTodasColunas;
+window.deselecionarTodasColunas = deselecionarTodasColunas;
+window.aplicarSelecaoColunas = aplicarSelecaoColunas;
+
+// Inicializar navegação quando o documento estiver pronto
+document.addEventListener('DOMContentLoaded', () => {
+    inicializarNavegacaoKanban();
+});
 
     </script>
 </body>
