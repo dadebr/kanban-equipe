@@ -32,3 +32,6 @@ claude.md
 Thumbs.db
 
 # Manter apenas: index.html e README.md
+
+# Segredos locais
+.env
